@@ -1,5 +1,6 @@
 package com.vladesire.pokemon.ui.screens.list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vladesire.pokemon.data.PokemonRepository
@@ -8,6 +9,7 @@ import com.vladesire.pokemon.ui.screens.list.PokemonListScreenUIState.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,22 +32,31 @@ class PokemonListViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            val pokemons = repository.getPokemons()
+        // Basic error handling
+        try {
+            viewModelScope.launch {
+                val pokemons = repository.getPokemons()
 
-            _uiState.value = Loaded(pokemons)
+                _uiState.value = Loaded(pokemons)
 
-            pokemons.forEachIndexed { index, pokemon ->
-                launch {
-                    val url = repository.getPokemonImageUrl(pokemon.id)
+                pokemons.forEachIndexed { index, pokemon ->
+                    launch {
+                        val url = repository.getPokemonImageUrl(pokemon.id)
 
-                    _uiState.value = (_uiState.value as Loaded).copy(
-                        pokemons = (_uiState.value as Loaded).pokemons.updated(index) {
-                            it.copy( imageUrl = url)
+                        _uiState.update {
+                            (it as Loaded).copy(
+                                pokemons = it.pokemons.updated(index) {
+                                    it.copy(
+                                        imageUrl = url
+                                    )
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
+        } catch (ex: Exception) {
+            Log.e("PokemonListViewModel", "$ex")
         }
     }
 }

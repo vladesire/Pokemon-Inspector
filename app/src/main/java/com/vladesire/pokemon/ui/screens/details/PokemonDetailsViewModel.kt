@@ -1,5 +1,6 @@
 package com.vladesire.pokemon.ui.screens.details
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vladesire.pokemon.data.PokemonRepository
@@ -35,8 +36,12 @@ class PokemonDetailsViewModel @AssistedInject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _uiState.value = Loaded(repository.getDetailedPokemon(pokemonId))
+        try {
+            viewModelScope.launch {
+                _uiState.value = Loaded(repository.getDetailedPokemon(pokemonId))
+            }
+        } catch (ex: Exception) {
+            Log.e("PokemonDetailsViewModel", "$ex")
         }
     }
 }
