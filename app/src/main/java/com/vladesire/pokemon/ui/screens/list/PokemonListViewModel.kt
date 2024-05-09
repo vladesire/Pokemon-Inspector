@@ -1,11 +1,12 @@
 package com.vladesire.pokemon.ui.screens.list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vladesire.pokemon.data.PokemonRepository
 import com.vladesire.pokemon.data.model.Pokemon
-import com.vladesire.pokemon.ui.screens.list.PokemonListScreenUIState.*
+import com.vladesire.pokemon.ui.screens.list.PokemonListScreenUIState.Error
+import com.vladesire.pokemon.ui.screens.list.PokemonListScreenUIState.Loaded
+import com.vladesire.pokemon.ui.screens.list.PokemonListScreenUIState.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,9 @@ import javax.inject.Inject
 
 sealed interface PokemonListScreenUIState {
     data object Loading : PokemonListScreenUIState
+    data class Error(
+        val message: String
+    ) : PokemonListScreenUIState
     data class Loaded(
         val pokemons: List<Pokemon>
     ) : PokemonListScreenUIState
@@ -55,7 +59,7 @@ class PokemonListViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                Log.e("PokemonListViewModel", "$ex")
+                _uiState.value = Error(ex.toString())
             }
         }
     }

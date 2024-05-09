@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.vladesire.pokemon.R
 import com.vladesire.pokemon.data.model.Pokemon
+import com.vladesire.pokemon.ui.ErrorBox
 import com.vladesire.pokemon.ui.LoadingBox
 
 @Composable
@@ -43,6 +44,11 @@ fun PokemonListRoute(
                 showPokemonDetails = showPokemonDetails,
             )
         }
+
+        is PokemonListScreenUIState.Error -> {
+            ErrorBox(state.message)
+        }
+
         PokemonListScreenUIState.Loading ->  {
             LoadingBox()
         }

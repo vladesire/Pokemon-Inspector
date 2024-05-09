@@ -16,6 +16,9 @@ import kotlinx.coroutines.launch
 
 sealed interface PokemonDetailsScreenUIState {
     data object Loading : PokemonDetailsScreenUIState
+    data class Error(
+        val message: String
+    ) : PokemonDetailsScreenUIState
     data class Loaded(
         val pokemon: DetailedPokemon
     ) : PokemonDetailsScreenUIState
@@ -41,7 +44,7 @@ class PokemonDetailsViewModel @AssistedInject constructor(
             try {
                 _uiState.value = Loaded(repository.getDetailedPokemon(pokemonId))
             } catch (ex: Exception) {
-                Log.e("PokemonDetailsViewModel", "$ex")
+                _uiState.value = Error(ex.toString())
             }
         }
     }
