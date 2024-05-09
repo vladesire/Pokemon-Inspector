@@ -11,13 +11,17 @@ import com.vladesire.pokemon.data.network.model.Sprites
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.Assert.*
 
 class PokemonDataSourceUnitTest {
+    private val testDispatcher = StandardTestDispatcher()
+
     @Test
-    fun `check with fake api`() = runTest {
+    fun `check with fake api`() = runTest(testDispatcher) {
         val api = object : PokemonApi {
             override suspend fun getPokemons(limit: Int, offset: Int): PokemonListResponse {
                 return PokemonListResponse(
@@ -47,7 +51,10 @@ class PokemonDataSourceUnitTest {
             }
         }
 
-        val pokemon = PokemonRemoteDataSource(api)
+        val pokemon = PokemonRemoteDataSource(
+            api = api,
+            ioDispatcher = testDispatcher
+        )
 
 
         assertEquals(
