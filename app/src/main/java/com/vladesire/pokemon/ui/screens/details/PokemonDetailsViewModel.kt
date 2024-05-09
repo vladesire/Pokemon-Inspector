@@ -36,12 +36,13 @@ class PokemonDetailsViewModel @AssistedInject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            // Basic error handling
+            try {
                 _uiState.value = Loaded(repository.getDetailedPokemon(pokemonId))
+            } catch (ex: Exception) {
+                Log.e("PokemonDetailsViewModel", "$ex")
             }
-        } catch (ex: Exception) {
-            Log.e("PokemonDetailsViewModel", "$ex")
         }
     }
 }

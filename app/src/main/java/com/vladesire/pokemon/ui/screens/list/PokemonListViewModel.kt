@@ -32,9 +32,9 @@ class PokemonListViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        // Basic error handling
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            // Basic error handling
+            try {
                 val pokemons = repository.getPokemons()
 
                 _uiState.value = Loaded(pokemons)
@@ -54,9 +54,9 @@ class PokemonListViewModel @Inject constructor(
                         }
                     }
                 }
+            } catch (ex: Exception) {
+                Log.e("PokemonListViewModel", "$ex")
             }
-        } catch (ex: Exception) {
-            Log.e("PokemonListViewModel", "$ex")
         }
     }
 }
